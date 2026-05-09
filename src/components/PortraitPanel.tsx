@@ -84,9 +84,9 @@ export default function PortraitPanel() {
             <div
               className="w-full h-full"
               style={{
-                backgroundImage: `url(${customPortrait || '/freud-portrait.jpg'})`,
-                backgroundSize: 'auto 105%',
-                backgroundPosition: '40% 18%',
+                backgroundImage: `url(${customPortrait || `${import.meta.env.BASE_URL}freud-portrait.jpg`})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center top',
                 backgroundRepeat: 'no-repeat',
                 filter: 'drop-shadow(0 4px 16px rgba(139, 115, 85, 0.15))',
               }}
