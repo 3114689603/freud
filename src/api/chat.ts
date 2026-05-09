@@ -1,5 +1,26 @@
 import { freudSystemPrompt } from '../prompts/freudSystemPrompt';
 
+let cachedSystemPrompt: string | null = null;
+
+export async function loadSkillPrompt(): Promise<string> {
+  if (cachedSystemPrompt) return cachedSystemPrompt;
+  try {
+    const baseUrl = import.meta.env.BASE_URL;
+    const response = await fetch(`${baseUrl}skills/freud-perspective/SKILL.md`);
+    if (!response.ok) throw new Error('Failed to load skill');
+    const markdown = await response.text();
+    cachedSystemPrompt = markdown.replace(/^---[\s\S]*?---\n*/, '').trim();
+    return cachedSystemPrompt;
+  } catch {
+    cachedSystemPrompt = freudSystemPrompt;
+    return cachedSystemPrompt;
+  }
+}
+
+export function getSystemPrompt(): string {
+  return cachedSystemPrompt || freudSystemPrompt;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -22,7 +43,7 @@ export async function* sendMessage(
 ): AsyncGenerator<string, void, unknown> {
   const { apiKey, baseUrl, model, temperature } = config;
   const isAnthropic = isAnthropicProtocol(baseUrl, model);
-  const systemMessage = freudSystemPrompt;
+  const systemMessage = getSystemPrompt();
 
   if (isAnthropic) {
     const anthropicMessages = messages.map(m => ({

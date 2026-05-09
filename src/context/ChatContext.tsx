@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import { sendMessage, testConnection, type ChatMessage, type ApiConfig, type TestResult } from '../api/chat';
+import React, { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
+import { sendMessage, testConnection, loadSkillPrompt, type ChatMessage, type ApiConfig, type TestResult } from '../api/chat';
 
 export interface Message extends ChatMessage {
   id: string;
@@ -98,6 +98,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     showSettings: false,
     showBottomSheet: false,
   });
+
+  useEffect(() => {
+    loadSkillPrompt().catch(() => {});
+  }, []);
 
   const sendUserMessage = useCallback(async (content: string) => {
     if (!state.apiConfig.apiKey) {
